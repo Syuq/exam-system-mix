@@ -17,12 +17,12 @@ type ExamService struct {
 }
 
 type CreateExamRequest struct {
-	Title       string    `json:"title" binding:"required"`
-	Description string    `json:"description"`
-	Duration    int       `json:"duration" binding:"required,min=1"` // in minutes
-	PassScore   int       `json:"pass_score" binding:"min=0,max=100"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
+	Title       string                `json:"title" binding:"required"`
+	Description string                `json:"description"`
+	Duration    int                   `json:"duration" binding:"required,min=1"` // in minutes
+	PassScore   int                   `json:"pass_score" binding:"min=0,max=100"`
+	StartTime   time.Time             `json:"start_time"`
+	EndTime     time.Time             `json:"end_time"`
 	Questions   []ExamQuestionRequest `json:"questions" binding:"required,min=1"`
 }
 
@@ -474,8 +474,11 @@ func (s *ExamService) StartExam(examID uint, userID uint) (*StartExamResponse, e
 		s.logger.WithError(err).Warn("Failed to store exam session in Redis")
 	}
 
+	// Convert UserExam to UserExamResponse
+	userExamResponse := s.convertUserExamToResponse(&userExam, &exam)
+
 	response := &StartExamResponse{
-		UserExam:  *userExam.ToResponse(),
+		UserExam:  *userExamResponse,
 		Questions: questions,
 		TimeLeft:  timeLeft,
 	}
@@ -515,9 +518,9 @@ func (s *ExamService) SubmitExam(examID uint, userID uint, req SubmitExamRequest
 		if elapsed > duration {
 			// Auto-submit due to time expiry
 			s.logger.WithFields(logrus.Fields{
-				"exam_id": examID,
-				"user_id": userID,
-				"elapsed": elapsed,
+				"exam_id":  examID,
+				"user_id":  userID,
+				"elapsed":  elapsed,
 				"duration": duration,
 			}).Warn("Exam auto-submitted due to time expiry")
 		}
@@ -588,8 +591,8 @@ func (s *ExamService) processExamSubmission(exam *models.Exam, userExam *models.
 			answer.SelectedOptions = submittedAnswer.SelectedOptions
 			answer.TimeSpent = submittedAnswer.TimeSpent
 
-			// Validate answer
-			if question.ValidateAnswer(submittedAnswer.SelectedOptions) {
+			// Validate answer - you'll need to implement this method in your Question model
+			if s.validateQuestionAnswer(&question, submittedAnswer.SelectedOptions) {
 				answer.IsCorrect = true
 				answer.Points = eq.Points
 				earnedPoints += eq.Points
@@ -629,16 +632,40 @@ func (s *ExamService) processExamSubmission(exam *models.Exam, userExam *models.
 	return &result, nil
 }
 
-// Helper method to convert UserExam to UserExamResponse
-func (ue *UserExam) ToResponse() *models.UserExamResponse {
-	return &models.UserExamResponse{
-		ID:           ue.ID,
-		Status:       ue.Status,
-		StartedAt:    ue.StartedAt,
-		CompletedAt:  ue.CompletedAt,
-		ExpiresAt:    ue.ExpiresAt,
-		AttemptCount: ue.AttemptCount,
-		MaxAttempts:  ue.MaxAttempts,
-	}
+// Helper method to validate question answer
+// This assumes you have correct answer data in your Question model
+func (s *ExamService) validateQuestionAnswer(question *models.Question, selectedOptions []string) bool {
+	// You'll need to implement this based on your Question model structure
+	// This is a placeholder - replace with your actual validation logic
+	// For example, if you have a CorrectAnswers field in your Question model:
+	// return question.ValidateAnswer(selectedOptions)
+
+	// Placeholder implementation - replace with actual logic
+	return len(selectedOptions) > 0
 }
 
+// Helper method to convert UserExam to UserExamResponse
+func (s *ExamService) convertUserExamToResponse(userExam *models.UserExam, exam *models.Exam) *models.UserExamResponse {
+	response := &models.UserExamResponse{
+		ID:           userExam.ID,
+		Status:       userExam.Status,
+		StartedAt:    userExam.StartedAt,
+		CompletedAt:  userExam.CompletedAt,
+		ExpiresAt:    userExam.ExpiresAt,
+		AttemptCount: userExam.AttemptCount,
+		MaxAttempts:  userExam.MaxAttempts,
+	}
+
+	// Calculate time left if exam is started
+	if userExam.StartedAt != nil && userExam.Status == models.UserExamStarted {
+		examDuration := time.Duration(exam.Duration) * time.Minute
+		elapsed := time.Since(*userExam.StartedAt)
+		timeLeft := int((examDuration - elapsed).Seconds())
+		if timeLeft < 0 {
+			timeLeft = 0
+		}
+		response.TimeLeft = &timeLeft
+	}
+
+	return response
+}

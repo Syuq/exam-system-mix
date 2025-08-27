@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="multichoice">
+    <name>
+      <text>Trường Đại học Quy Nhơn được thành lập vào năm nào?</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Trường Đại học Quy Nhơn được thành lập vào năm nào?]]></text>
+    </questiontext>
+    <answer fraction="0">
+      <text>A. 2000</text>
+    </answer>
+    <answer fraction="100">
+      <text>B. 2001</text>
+    </answer>
+    <answer fraction="0">
+      <text>C. 2003</text>
+    </answer>
+    <answer fraction="0">
+      <text>D. 2005</text>
+    </answer>
+  </question>
+
+  <question type="multichoice">
+    <name>
+      <text>Trường Đại học Quy Nhơn tọa lạc tại thành phố nào?</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Trường Đại học Quy Nhơn tọa lạc tại thành phố nào?]]></text>
+    </questiontext>
+    <answer fraction="0">
+      <text>A. Hà Nội</text>
+    </answer>
+    <answer fraction="100">
+      <text>B. Quy Nhơn</text>
+    </answer>
+    <answer fraction="0">
+      <text>C. Đà Nẵng</text>
+    </answer>
+    <answer fraction="0">
+      <text>D. TP. Hồ Chí Minh</text>
+    </answer>
+  </question>
+
+  <question type="multichoice">
+    <name>
+      <text>Trường Đại học Quy Nhơn có bao nhiêu ngành đào tạo ở cấp đại học?</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Trường Đại học Quy Nhơn có bao nhiêu ngành đào tạo ở cấp đại học?]]></text>
+    </questiontext>
+    <answer fraction="0">
+      <text>A. 15 ngành</text>
+    </answer>
+    <answer fraction="0">
+      <text>B. 20 ngành</text>
+    </answer>
+    <answer fraction="100">
+      <text>C. 25 ngành</text>
+    </answer>
+    <answer fraction="0">
+      <text>D. 30 ngành</text>
+    </answer>
+  </question>
+
+  <question type="multichoice">
+    <name>
+      <text>Khoa nào của Trường Đại học Quy Nhơn đào tạo chuyên ngành Công nghệ thông tin?</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Khoa nào của Trường Đại học Quy Nhơn đào tạo chuyên ngành Công nghệ thông tin?]]></text>
+    </questiontext>
+    <answer fraction="0">
+      <text>A. Khoa Kinh tế</text>
+    </answer>
+    <answer fraction="100">
+      <text>B. Khoa Công nghệ thông tin</text>
+    </answer>
+    <answer fraction="0">
+      <text>C. Khoa Xã hội học</text>
+    </answer>
+    <answer fraction="0">
+      <text>D. Khoa Kỹ thuật</text>
+    </answer>
+  </question>
+
+  <question type="multichoice">
+    <name>
+      <text>Trường Đại học Quy Nhơn là trường công lập hay tư thục?</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Trường Đại học Quy Nhơn là trường công lập hay tư thục?]]></text>
+    </questiontext>
+    <answer fraction="100">
+      <text>A. Công lập</text>
+    </answer>
+    <answer fraction="0">
+      <text>B. Tư thục</text>
+    </answer>
+    <answer fraction="0">
+      <text>C. Nửa công lập, nửa tư thục</text>
+    </answer>
+    <answer fraction="0">
+      <text>D. Độc lập</text>
+    </answer>
+  </question>
+</quiz>

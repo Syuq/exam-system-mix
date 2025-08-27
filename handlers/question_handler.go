@@ -336,3 +336,112 @@ func (h *QuestionHandler) GetTags(c *gin.Context) {
 	})
 }
 
+// GetRandomQuestionsByTags returns random questions filtered by tags and difficulty
+// @Summary Get random questions by tags
+// @Description Get random questions filtered by tags and difficulty level
+// @Tags questions
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param tags query string false "Comma-separated list of tags"
+// @Param count query int false "Number of questions to return" default(10)
+// @Param difficulty query string false "Question difficulty (easy, medium, hard)"
+// @Success 200 {object} map[string]interface{} "Random questions"
+// @Failure 400 {object} map[string]interface{} "Bad request"
+// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /api/v1/questions/random [get]
+func (h *QuestionHandler) GetRandomQuestionsByTags(c *gin.Context) {
+	// Parse and validate count parameter
+	count, err := strconv.Atoi(c.DefaultQuery("count", "10"))
+	if err != nil || count < 1 {
+		middleware.StructuredErrorResponse(c, http.StatusBadRequest, "INVALID_COUNT", "Invalid count parameter (must be >= 1)", nil)
+		return
+	}
+
+	// Limit maximum count to prevent abuse
+	if count > 100 {
+		middleware.StructuredErrorResponse(c, http.StatusBadRequest, "INVALID_COUNT", "Count cannot exceed 100", nil)
+		return
+	}
+
+	// Parse tags filter
+	var tags []string
+	if tagsStr := c.Query("tags"); tagsStr != "" {
+		rawTags := strings.Split(tagsStr, ",")
+		// Trim whitespace and filter empty tags
+		tags = make([]string, 0, len(rawTags))
+		for _, tag := range rawTags {
+			if trimmed := strings.TrimSpace(tag); trimmed != "" {
+				tags = append(tags, trimmed)
+			}
+		}
+	}
+
+	// Parse and validate difficulty filter
+	var difficulty models.QuestionDifficulty
+	if difficultyStr := c.Query("difficulty"); difficultyStr != "" {
+		if !isValidDifficulty(difficultyStr) {
+			middleware.StructuredErrorResponse(c, http.StatusBadRequest, "INVALID_DIFFICULTY", "Invalid difficulty value", nil)
+			return
+		}
+		difficulty = models.QuestionDifficulty(difficultyStr)
+	}
+
+	// Check if user is admin to determine response format
+	isAdmin := middleware.IsAdmin(c)
+
+	// Get random questions
+	questions, err := h.questionService.GetRandomQuestionsByTags(tags, count, difficulty)
+	if err != nil {
+		h.logger.WithFields(logrus.Fields{
+			"tags":       tags,
+			"count":      count,
+			"difficulty": difficulty,
+			"request_id": middleware.GetRequestID(c),
+		}).WithError(err).Error("Failed to get random questions")
+
+		if strings.Contains(err.Error(), "validation") {
+			middleware.StructuredErrorResponse(c, http.StatusBadRequest, "VALIDATION_FAILED", err.Error(), nil)
+			return
+		}
+
+		middleware.StructuredErrorResponse(c, http.StatusInternalServerError, "RANDOM_QUESTIONS_FETCH_FAILED", "Failed to get random questions", nil)
+		return
+	}
+
+	// Convert to response format
+	questionResponses := make([]models.QuestionResponse, len(questions))
+	for i, question := range questions {
+		questionResponses[i] = question.ToResponse(isAdmin)
+	}
+
+	h.logger.WithFields(logrus.Fields{
+		"tags":           tags,
+		"count":          count,
+		"difficulty":     difficulty,
+		"returned_count": len(questionResponses),
+		"request_id":     middleware.GetRequestID(c),
+	}).Info("Successfully retrieved random questions")
+
+	c.JSON(http.StatusOK, gin.H{
+		"questions":       questionResponses,
+		"requested_count": count,
+		"returned_count":  len(questionResponses),
+		"filters": gin.H{
+			"tags":       tags,
+			"difficulty": difficulty,
+		},
+	})
+}
+
+// Helper functions for validation
+func isValidDifficulty(difficulty string) bool {
+	validDifficulties := []string{"easy", "medium", "hard"}
+	for _, valid := range validDifficulties {
+		if difficulty == valid {
+			return true
+		}
+	}
+	return false
+}

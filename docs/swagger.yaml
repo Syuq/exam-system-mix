@@ -1,0 +1,2232 @@
+basePath: /api/v1
+definitions:
+  models.AnswerResponse:
+    properties:
+      correct_options:
+        items:
+          type: string
+        type: array
+      is_correct:
+        type: boolean
+      points:
+        type: integer
+      question:
+        $ref: '#/definitions/models.QuestionResponse'
+      question_id:
+        type: integer
+      selected_options:
+        items:
+          type: string
+        type: array
+      time_spent:
+        type: integer
+    type: object
+  models.ExamResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      description:
+        type: string
+      duration:
+        type: integer
+      end_time:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      pass_score:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/models.QuestionResponse'
+        type: array
+      start_time:
+        type: string
+      status:
+        $ref: '#/definitions/models.ExamStatus'
+      title:
+        type: string
+      total_points:
+        type: integer
+      updated_at:
+        type: string
+      user_exam:
+        $ref: '#/definitions/models.UserExamResponse'
+    type: object
+  models.ExamStatistics:
+    properties:
+      average_duration:
+        description: in seconds
+        type: integer
+      average_score:
+        type: number
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      failed_attempts:
+        type: integer
+      highest_score:
+        type: number
+      lowest_score:
+        type: number
+      pass_rate:
+        type: number
+      passed_attempts:
+        type: integer
+      total_attempts:
+        type: integer
+    type: object
+  models.ExamStatus:
+    enum:
+    - draft
+    - active
+    - completed
+    - archived
+    type: string
+    x-enum-varnames:
+    - ExamDraft
+    - ExamActive
+    - ExamCompleted
+    - ExamArchived
+  models.Option:
+    properties:
+      id:
+        type: string
+      is_correct:
+        type: boolean
+      text:
+        type: string
+    type: object
+  models.OptionResponse:
+    properties:
+      id:
+        type: string
+      text:
+        type: string
+    type: object
+  models.QuestionDifficulty:
+    enum:
+    - easy
+    - medium
+    - hard
+    type: string
+    x-enum-varnames:
+    - Easy
+    - Medium
+    - Hard
+  models.QuestionResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      difficulty:
+        $ref: '#/definitions/models.QuestionDifficulty'
+      explanation:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/models.OptionResponse'
+        type: array
+      points:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      time_limit:
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.QuestionType'
+      updated_at:
+        type: string
+    type: object
+  models.QuestionStatistics:
+    properties:
+      average_time_spent:
+        description: in seconds
+        type: integer
+      correct_attempts:
+        type: integer
+      question_id:
+        type: integer
+      question_title:
+        type: string
+      success_rate:
+        type: number
+      total_attempts:
+        type: integer
+      wrong_attempts:
+        type: integer
+    type: object
+  models.QuestionType:
+    enum:
+    - multiple_choice
+    - true_false
+    type: string
+    x-enum-varnames:
+    - MultipleChoice
+    - TrueFalse
+  models.ResultResponse:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/models.AnswerResponse'
+        type: array
+      created_at:
+        type: string
+      duration:
+        type: integer
+      end_time:
+        type: string
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      id:
+        type: integer
+      max_points:
+        type: integer
+      passed:
+        type: boolean
+      score:
+        type: number
+      start_time:
+        type: string
+      total_points:
+        type: integer
+      user:
+        $ref: '#/definitions/models.UserResponse'
+      user_exam:
+        allOf:
+        - $ref: '#/definitions/models.UserExamResponse'
+        description: Can be populated from service layer
+      user_exam_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.UserExamResponse:
+    properties:
+      attempt_count:
+        type: integer
+      completed_at:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: integer
+      max_attempts:
+        type: integer
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/models.UserExamStatus'
+      time_left:
+        description: in seconds
+        type: integer
+    type: object
+  models.UserExamStatus:
+    enum:
+    - assigned
+    - started
+    - completed
+    - expired
+    type: string
+    x-enum-varnames:
+    - UserExamAssigned
+    - UserExamStarted
+    - UserExamCompleted
+    - UserExamExpired
+  models.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      role:
+        $ref: '#/definitions/models.UserRole'
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserRole:
+    enum:
+    - user
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleUser
+    - RoleAdmin
+  models.UserStatistics:
+    properties:
+      average_score:
+        type: number
+      failed_exams:
+        type: integer
+      highest_score:
+        type: number
+      lowest_score:
+        type: number
+      pass_rate:
+        type: number
+      passed_exams:
+        type: integer
+      total_exams:
+        type: integer
+      total_time_spent:
+        description: in seconds
+        type: integer
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  services.AssignExamRequest:
+    properties:
+      expires_at:
+        type: string
+      max_attempts:
+        minimum: 1
+        type: integer
+      user_ids:
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    required:
+    - user_ids
+    type: object
+  services.ChangePasswordRequest:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 6
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  services.CreateExamRequest:
+    properties:
+      description:
+        type: string
+      duration:
+        description: in minutes
+        minimum: 1
+        type: integer
+      end_time:
+        type: string
+      pass_score:
+        maximum: 100
+        minimum: 0
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/services.ExamQuestionRequest'
+        minItems: 1
+        type: array
+      start_time:
+        type: string
+      title:
+        type: string
+    required:
+    - duration
+    - questions
+    - title
+    type: object
+  services.CreateQuestionRequest:
+    properties:
+      content:
+        type: string
+      difficulty:
+        $ref: '#/definitions/models.QuestionDifficulty'
+      explanation:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/models.Option'
+        minItems: 2
+        type: array
+      points:
+        minimum: 1
+        type: integer
+      tags:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      time_limit:
+        minimum: 10
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.QuestionType'
+    required:
+    - content
+    - difficulty
+    - options
+    - tags
+    - title
+    - type
+    type: object
+  services.ExamListResponse:
+    properties:
+      exams:
+        items:
+          $ref: '#/definitions/models.ExamResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  services.ExamQuestionRequest:
+    properties:
+      order:
+        minimum: 1
+        type: integer
+      points:
+        minimum: 1
+        type: integer
+      question_id:
+        type: integer
+    required:
+    - question_id
+    type: object
+  services.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  services.OverallStatistics:
+    properties:
+      average_duration:
+        description: in seconds
+        type: integer
+      average_score:
+        type: number
+      pass_rate:
+        type: number
+      total_attempts:
+        type: integer
+      total_exams:
+        type: integer
+      total_time_spent:
+        description: in seconds
+        type: integer
+      total_users:
+        type: integer
+    type: object
+  services.QuestionListResponse:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/models.QuestionResponse'
+        type: array
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  services.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  services.RegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    - username
+    type: object
+  services.ResultListResponse:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/models.ResultResponse'
+        type: array
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  services.StartExamResponse:
+    properties:
+      questions:
+        items:
+          $ref: '#/definitions/models.QuestionResponse'
+        type: array
+      time_left:
+        description: in seconds
+        type: integer
+      user_exam:
+        $ref: '#/definitions/models.UserExamResponse'
+    type: object
+  services.StatisticsResponse:
+    properties:
+      exam_statistics:
+        items:
+          $ref: '#/definitions/models.ExamStatistics'
+        type: array
+      overall_stats:
+        $ref: '#/definitions/services.OverallStatistics'
+      question_statistics:
+        items:
+          $ref: '#/definitions/models.QuestionStatistics'
+        type: array
+      user_statistics:
+        items:
+          $ref: '#/definitions/models.UserStatistics'
+        type: array
+    type: object
+  services.SubmitAnswerRequest:
+    properties:
+      question_id:
+        type: integer
+      selected_options:
+        items:
+          type: string
+        type: array
+      time_spent:
+        description: in seconds
+        minimum: 0
+        type: integer
+    required:
+    - question_id
+    - selected_options
+    type: object
+  services.SubmitExamRequest:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/services.SubmitAnswerRequest'
+        type: array
+    required:
+    - answers
+    type: object
+  services.UpdateExamRequest:
+    properties:
+      description:
+        type: string
+      duration:
+        minimum: 1
+        type: integer
+      end_time:
+        type: string
+      pass_score:
+        maximum: 100
+        minimum: 0
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/services.ExamQuestionRequest'
+        minItems: 1
+        type: array
+      start_time:
+        type: string
+      status:
+        $ref: '#/definitions/models.ExamStatus'
+      title:
+        type: string
+    required:
+    - duration
+    - questions
+    - status
+    - title
+    type: object
+  services.UpdateProfileRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - first_name
+    - last_name
+    - username
+    type: object
+  services.UpdateQuestionRequest:
+    properties:
+      content:
+        type: string
+      difficulty:
+        $ref: '#/definitions/models.QuestionDifficulty'
+      explanation:
+        type: string
+      is_active:
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/models.Option'
+        minItems: 2
+        type: array
+      points:
+        minimum: 1
+        type: integer
+      tags:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      time_limit:
+        minimum: 10
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.QuestionType'
+    required:
+    - content
+    - difficulty
+    - options
+    - tags
+    - title
+    - type
+    type: object
+  services.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      role:
+        $ref: '#/definitions/models.UserRole'
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - role
+    - username
+    type: object
+  services.UserListResponse:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/models.UserResponse'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com
+  description: This is a sample Gin server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://example.com/terms/
+  title: My Gin API
+  version: "1.0"
+paths:
+  /api/v1/admin/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get recent application logs (admin only)
+      parameters:
+      - default: 100
+        description: Number of log lines to return
+        in: query
+        name: lines
+        type: integer
+      - description: Log level filter (error, warn, info, debug)
+        in: query
+        name: level
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Application logs
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get application logs
+      tags:
+      - admin
+  /api/v1/admin/seed:
+    post:
+      consumes:
+      - application/json
+      description: Seed the database with initial users, questions, and exams (admin
+        only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Database seeded successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Seed database
+      tags:
+      - admin
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login user
+      tags:
+      - auth
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Invalidate user's refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /api/v1/auth/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - auth
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Get a new access token using refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid refresh token
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refresh access token
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: User already exists
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /api/v1/exams:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of exams (admin sees all, users see assigned
+        exams)
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exams list
+          schema:
+            $ref: '#/definitions/services.ExamListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get exams list
+      tags:
+      - exams
+    post:
+      consumes:
+      - application/json
+      description: Create a new exam (admin only)
+      parameters:
+      - description: Exam data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateExamRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Exam created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create exam
+      tags:
+      - exams
+  /api/v1/exams/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific exam (admin only)
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Cannot delete exam with existing results
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete exam
+      tags:
+      - exams
+    get:
+      consumes:
+      - application/json
+      description: Get a specific exam by its ID
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Exam not assigned to user
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get exam by ID
+      tags:
+      - exams
+    put:
+      consumes:
+      - application/json
+      description: Update a specific exam (admin only)
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exam update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateExamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Cannot update completed exam
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update exam
+      tags:
+      - exams
+  /api/v1/exams/{id}/assign:
+    post:
+      consumes:
+      - application/json
+      description: Assign an exam to specific users (admin only)
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Assignment data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.AssignExamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam assigned successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Assign exam to users
+      tags:
+      - exams
+  /api/v1/exams/{id}/start:
+    post:
+      consumes:
+      - application/json
+      description: Start an assigned exam for the current user
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam started successfully
+          schema:
+            $ref: '#/definitions/services.StartExamResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Exam cannot be started
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not assigned to user
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Start exam
+      tags:
+      - exams
+  /api/v1/exams/{id}/submit:
+    post:
+      consumes:
+      - application/json
+      description: Submit answers for an exam
+      parameters:
+      - description: Exam ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exam answers
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.SubmitExamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam submitted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Exam cannot be submitted
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Exam not assigned to user
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit exam
+      tags:
+      - exams
+  /api/v1/questions:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of questions with optional filtering
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Comma-separated list of tags
+        in: query
+        name: tags
+        type: string
+      - description: Question difficulty (easy, medium, hard)
+        in: query
+        name: difficulty
+        type: string
+      - description: Question type (multiple_choice, true_false)
+        in: query
+        name: type
+        type: string
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      - description: Filter by active status
+        in: query
+        name: is_active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Questions list
+          schema:
+            $ref: '#/definitions/services.QuestionListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get questions list
+      tags:
+      - questions
+    post:
+      consumes:
+      - application/json
+      description: Create a new question (admin only)
+      parameters:
+      - description: Question data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Question created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create question
+      tags:
+      - questions
+  /api/v1/questions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific question (admin only)
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Question deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Question not found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Question is used in active exams
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete question
+      tags:
+      - questions
+    get:
+      consumes:
+      - application/json
+      description: Get a specific question by its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Question details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Question not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get question by ID
+      tags:
+      - questions
+    put:
+      consumes:
+      - application/json
+      description: Update a specific question (admin only)
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Question update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Question updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Question not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update question
+      tags:
+      - questions
+  /api/v1/questions/random:
+    get:
+      consumes:
+      - application/json
+      description: Get random questions filtered by tags and difficulty level
+      parameters:
+      - description: Comma-separated list of tags
+        in: query
+        name: tags
+        type: string
+      - default: 10
+        description: Number of questions to return
+        in: query
+        name: count
+        type: integer
+      - description: Question difficulty (easy, medium, hard)
+        in: query
+        name: difficulty
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Random questions
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get random questions by tags
+      tags:
+      - questions
+  /api/v1/questions/tags:
+    get:
+      consumes:
+      - application/json
+      description: Get all available question tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tags list
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get question tags
+      tags:
+      - questions
+  /api/v1/results:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of exam results (admin sees all, users see
+        their own)
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Filter by exam ID
+        in: query
+        name: exam_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Results list
+          schema:
+            $ref: '#/definitions/services.ResultListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get results list
+      tags:
+      - results
+  /api/v1/results/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a specific exam result by its ID
+      parameters:
+      - description: Result ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Result details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Result not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get result by ID
+      tags:
+      - results
+  /api/v1/results/exam/{exam_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all results for a specific exam (admin only)
+      parameters:
+      - description: Exam ID
+        in: path
+        name: exam_id
+        required: true
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exam results
+          schema:
+            $ref: '#/definitions/services.ResultListResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get exam results
+      tags:
+      - results
+  /api/v1/results/my-results:
+    get:
+      consumes:
+      - application/json
+      description: Get exam results for the currently authenticated user
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User's results
+          schema:
+            $ref: '#/definitions/services.ResultListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's results
+      tags:
+      - results
+  /api/v1/results/my-statistics:
+    get:
+      consumes:
+      - application/json
+      description: Get exam statistics for the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User statistics
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's statistics
+      tags:
+      - results
+  /api/v1/results/statistics:
+    get:
+      consumes:
+      - application/json
+      description: Get comprehensive exam, user, and question statistics (admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Statistics data
+          schema:
+            $ref: '#/definitions/services.StatisticsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get statistics
+      tags:
+      - results
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of all users (admin only)
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users list
+          schema:
+            $ref: '#/definitions/services.UserListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get users list
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific user (admin only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get a specific user by their ID (admin only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update a specific user (admin only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Email or username already taken
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - users
+  /api/v1/users/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change the password of the currently authenticated user
+      parameters:
+      - description: Password change data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password changed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized or incorrect current password
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Change user password
+      tags:
+      - users
+  /api/v1/users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update the profile of the currently authenticated user
+      parameters:
+      - description: Profile update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Username already taken
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - users
+swagger: "2.0"

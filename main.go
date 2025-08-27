@@ -2,23 +2,41 @@ package main
 
 import (
 	"context"
-	"exam-system/config"
-	"exam-system/handlers"
-	"exam-system/middleware"
-	"exam-system/models"
-	"exam-system/services"
-	"exam-system/utils"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"exam-system/config"
+	"exam-system/handlers"
+	"exam-system/middleware"
+	"exam-system/models"
+	"exam-system/services"
+	"exam-system/utils"
+
+	// _ "exam-system/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	// swaggerFiles "github.com/swaggo/files"
+	// ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           My Gin API
+// @version         1.0
+// @description     This is a sample Gin server.
+// @termsOfService  http://example.com/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.example.com
+// @contact.email  support@example.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 func main() {
 	// Load configuration
 	config.LoadConfig()
@@ -141,12 +159,13 @@ func setupRoutes(
 	{
 		userGroup.GET("/profile", userHandler.GetProfile)
 		userGroup.PUT("/profile", userHandler.UpdateProfile)
-		
+
 		// Admin only routes
 		adminUserGroup := userGroup.Group("")
 		adminUserGroup.Use(middleware.AdminMiddleware())
 		{
 			adminUserGroup.GET("", userHandler.GetUsers)
+			adminUserGroup.POST("/change-password", userHandler.ChangePassword)
 			adminUserGroup.GET("/:id", userHandler.GetUser)
 			adminUserGroup.PUT("/:id", userHandler.UpdateUser)
 			adminUserGroup.DELETE("/:id", userHandler.DeleteUser)
@@ -158,8 +177,10 @@ func setupRoutes(
 	questionGroup.Use(middleware.AuthMiddleware())
 	{
 		questionGroup.GET("", questionHandler.GetQuestions)
+		questionGroup.GET("/tags", questionHandler.GetTags)
+		questionGroup.GET("/random", questionHandler.GetRandomQuestionsByTags)
 		questionGroup.GET("/:id", questionHandler.GetQuestion)
-		
+
 		// Admin only routes
 		adminQuestionGroup := questionGroup.Group("")
 		adminQuestionGroup.Use(middleware.AdminMiddleware())
@@ -178,7 +199,7 @@ func setupRoutes(
 		examGroup.GET("/:id", examHandler.GetExam)
 		examGroup.POST("/:id/start", examHandler.StartExam)
 		examGroup.POST("/:id/submit", middleware.RateLimitMiddleware(redisClient, config.AppConfig.RateLimit.SubmitLimit, config.AppConfig.RateLimit.Window, "submit"), examHandler.SubmitExam)
-		
+
 		// Admin only routes
 		adminExamGroup := examGroup.Group("")
 		adminExamGroup.Use(middleware.AdminMiddleware())
@@ -196,7 +217,7 @@ func setupRoutes(
 	{
 		resultGroup.GET("", resultHandler.GetResults)
 		resultGroup.GET("/:id", resultHandler.GetResult)
-		
+
 		// Admin only routes
 		adminResultGroup := resultGroup.Group("")
 		adminResultGroup.Use(middleware.AdminMiddleware())
@@ -212,5 +233,10 @@ func setupRoutes(
 		adminGroup.POST("/seed", handlers.SeedData)
 		adminGroup.GET("/logs", handlers.GetLogs)
 	}
-}
 
+	// Documentation routes (if Swagger is enabled)
+	// if config.AppConfig.Server.EnableSwagger {
+	// 	router.Static("/docs", "./docs")
+	// 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// }
+}

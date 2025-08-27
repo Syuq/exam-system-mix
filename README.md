@@ -45,7 +45,7 @@ A high-performance, scalable Multiple Choice Exam Mixing System built with Go, G
 
 ## Tech Stack
 
-- **Language**: Go 1.21+
+- **Language**: Go 1.23+
 - **Framework**: Gin Web Framework
 - **Database**: PostgreSQL 15+
 - **Cache**: Redis 7+
@@ -59,7 +59,7 @@ A high-performance, scalable Multiple Choice Exam Mixing System built with Go, G
 
 ### Prerequisites
 
-- Go 1.21 or higher
+- Go 1.23 or higher
 - PostgreSQL 15+
 - Redis 7+
 - Make (optional, for convenience commands)

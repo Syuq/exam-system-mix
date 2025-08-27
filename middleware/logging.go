@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"time"
 
@@ -48,7 +47,7 @@ func LoggingMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 		responseBody := &bytes.Buffer{}
 		writer := &responseWriter{
 			ResponseWriter: c.Writer,
-			body:          responseBody,
+			body:           responseBody,
 		}
 		c.Writer = writer
 
@@ -160,7 +159,7 @@ func ErrorLoggingMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 		// Log any errors that occurred
 		if len(c.Errors) > 0 {
 			requestID := GetRequestID(c)
-			
+
 			for _, err := range c.Errors {
 				logger.WithFields(logrus.Fields{
 					"request_id": requestID,
@@ -177,7 +176,7 @@ func ErrorLoggingMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 // StructuredErrorResponse creates a consistent error response format
 func StructuredErrorResponse(c *gin.Context, statusCode int, errorCode string, message string, details interface{}) {
 	requestID := GetRequestID(c)
-	
+
 	response := gin.H{
 		"error":      message,
 		"code":       errorCode,
@@ -191,4 +190,3 @@ func StructuredErrorResponse(c *gin.Context, statusCode int, errorCode string, m
 
 	c.JSON(statusCode, response)
 }
-

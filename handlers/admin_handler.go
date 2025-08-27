@@ -3,12 +3,10 @@ package handlers
 import (
 	"exam-system/middleware"
 	"exam-system/models"
-	"exam-system/services"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -174,9 +172,9 @@ func seedQuestions(db *gorm.DB) error {
 
 	questions := []models.Question{
 		{
-			Title:   "What is Go?",
-			Content: "Go is a programming language developed by Google. What type of language is it?",
-			Type:    models.MultipleChoice,
+			Title:      "What is Go?",
+			Content:    "Go is a programming language developed by Google. What type of language is it?",
+			Type:       models.MultipleChoice,
 			Difficulty: models.Easy,
 			Options: models.Options{
 				{ID: "a", Text: "Interpreted language", IsCorrect: false},
@@ -192,9 +190,9 @@ func seedQuestions(db *gorm.DB) error {
 			CreatedBy:   admin.ID,
 		},
 		{
-			Title:   "HTTP Status Codes",
-			Content: "Which HTTP status code indicates a successful request?",
-			Type:    models.MultipleChoice,
+			Title:      "HTTP Status Codes",
+			Content:    "Which HTTP status code indicates a successful request?",
+			Type:       models.MultipleChoice,
 			Difficulty: models.Easy,
 			Options: models.Options{
 				{ID: "a", Text: "404", IsCorrect: false},
@@ -210,9 +208,9 @@ func seedQuestions(db *gorm.DB) error {
 			CreatedBy:   admin.ID,
 		},
 		{
-			Title:   "Database Normalization",
-			Content: "What is the primary goal of database normalization?",
-			Type:    models.MultipleChoice,
+			Title:      "Database Normalization",
+			Content:    "What is the primary goal of database normalization?",
+			Type:       models.MultipleChoice,
 			Difficulty: models.Medium,
 			Options: models.Options{
 				{ID: "a", Text: "Increase data redundancy", IsCorrect: false},
@@ -228,9 +226,9 @@ func seedQuestions(db *gorm.DB) error {
 			CreatedBy:   admin.ID,
 		},
 		{
-			Title:   "REST API",
-			Content: "Is REST a protocol?",
-			Type:    models.TrueFalse,
+			Title:      "REST API",
+			Content:    "Is REST a protocol?",
+			Type:       models.TrueFalse,
 			Difficulty: models.Medium,
 			Options: models.Options{
 				{ID: "true", Text: "True", IsCorrect: false},
@@ -244,9 +242,9 @@ func seedQuestions(db *gorm.DB) error {
 			CreatedBy:   admin.ID,
 		},
 		{
-			Title:   "Algorithm Complexity",
-			Content: "What is the time complexity of binary search?",
-			Type:    models.MultipleChoice,
+			Title:      "Algorithm Complexity",
+			Content:    "What is the time complexity of binary search?",
+			Type:       models.MultipleChoice,
 			Difficulty: models.Hard,
 			Options: models.Options{
 				{ID: "a", Text: "O(n)", IsCorrect: false},
@@ -328,7 +326,7 @@ func seedExams(db *gorm.DB) error {
 		},
 	}
 
-	for i, exam := range exams {
+	for _, exam := range exams {
 		if err := db.Create(&exam).Error; err != nil {
 			return err
 		}
@@ -360,4 +358,3 @@ func seedExams(db *gorm.DB) error {
 
 	return nil
 }
-

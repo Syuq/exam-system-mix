@@ -31,11 +31,10 @@ type Exam struct {
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 
-	// Relationships
+	// Relationships - Note: Removed Results to break circular dependency
 	Creator       User           `json:"creator,omitempty" gorm:"foreignKey:CreatedBy"`
 	ExamQuestions []ExamQuestion `json:"exam_questions,omitempty" gorm:"foreignKey:ExamID"`
 	UserExams     []UserExam     `json:"user_exams,omitempty" gorm:"foreignKey:ExamID"`
-	Results       []Result       `json:"results,omitempty" gorm:"foreignKey:ExamID"`
 }
 
 type ExamQuestion struct {
@@ -61,40 +60,40 @@ const (
 )
 
 type UserExam struct {
-	ID          uint           `json:"id" gorm:"primaryKey"`
-	UserID      uint           `json:"user_id" gorm:"not null"`
-	ExamID      uint           `json:"exam_id" gorm:"not null"`
-	Status      UserExamStatus `json:"status" gorm:"default:'assigned'"`
-	StartedAt   *time.Time     `json:"started_at"`
-	CompletedAt *time.Time     `json:"completed_at"`
-	ExpiresAt   *time.Time     `json:"expires_at"`
-	AttemptCount int           `json:"attempt_count" gorm:"default:0"`
-	MaxAttempts int            `json:"max_attempts" gorm:"default:1"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID           uint           `json:"id" gorm:"primaryKey"`
+	UserID       uint           `json:"user_id" gorm:"not null"`
+	ExamID       uint           `json:"exam_id" gorm:"not null"`
+	Status       UserExamStatus `json:"status" gorm:"default:'assigned'"`
+	StartedAt    *time.Time     `json:"started_at"`
+	CompletedAt  *time.Time     `json:"completed_at"`
+	ExpiresAt    *time.Time     `json:"expires_at"`
+	AttemptCount int            `json:"attempt_count" gorm:"default:0"`
+	MaxAttempts  int            `json:"max_attempts" gorm:"default:1"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 
-	// Relationships
-	User   User   `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	Exam   Exam   `json:"exam,omitempty" gorm:"foreignKey:ExamID"`
-	Result Result `json:"result,omitempty" gorm:"foreignKey:UserExamID"`
+	// Relationships - Note: Removed Result relationship to break circular dependency
+	// Results can be loaded separately using UserExamID foreign key
+	User User `json:"user,omitempty" gorm:"foreignKey:UserID"`
+	Exam Exam `json:"exam,omitempty" gorm:"foreignKey:ExamID"`
 }
 
 type ExamResponse struct {
-	ID          uint                   `json:"id"`
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	Duration    int                    `json:"duration"`
-	TotalPoints int                    `json:"total_points"`
-	PassScore   int                    `json:"pass_score"`
-	Status      ExamStatus             `json:"status"`
-	StartTime   *time.Time             `json:"start_time"`
-	EndTime     *time.Time             `json:"end_time"`
-	IsActive    bool                   `json:"is_active"`
-	CreatedBy   uint                   `json:"created_by"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
-	Questions   []QuestionResponse     `json:"questions,omitempty"`
-	UserExam    *UserExamResponse      `json:"user_exam,omitempty"`
+	ID          uint               `json:"id"`
+	Title       string             `json:"title"`
+	Description string             `json:"description"`
+	Duration    int                `json:"duration"`
+	TotalPoints int                `json:"total_points"`
+	PassScore   int                `json:"pass_score"`
+	Status      ExamStatus         `json:"status"`
+	StartTime   *time.Time         `json:"start_time"`
+	EndTime     *time.Time         `json:"end_time"`
+	IsActive    bool               `json:"is_active"`
+	CreatedBy   uint               `json:"created_by"`
+	CreatedAt   time.Time          `json:"created_at"`
+	UpdatedAt   time.Time          `json:"updated_at"`
+	Questions   []QuestionResponse `json:"questions,omitempty"`
+	UserExam    *UserExamResponse  `json:"user_exam,omitempty"`
 }
 
 type UserExamResponse struct {
@@ -175,4 +174,3 @@ func (ue *UserExam) CanStart() bool {
 func (ue *UserExam) CanSubmit() bool {
 	return ue.Status == UserExamStarted && !ue.IsExpired()
 }
-

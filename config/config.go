@@ -10,17 +10,18 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
-	JWT      JWTConfig
+	Server    ServerConfig
+	Database  DatabaseConfig
+	Redis     RedisConfig
+	JWT       JWTConfig
 	RateLimit RateLimitConfig
-	Logging  LoggingConfig
+	Logging   LoggingConfig
 }
 
 type ServerConfig struct {
-	Port    string
-	GinMode string
+	Port          string
+	GinMode       string
+	EnableSwagger bool
 }
 
 type DatabaseConfig struct {
@@ -66,8 +67,9 @@ func LoadConfig() {
 
 	AppConfig = &Config{
 		Server: ServerConfig{
-			Port:    getEnv("PORT", "8080"),
-			GinMode: getEnv("GIN_MODE", "debug"),
+			Port:          getEnv("PORT", "8080"),
+			GinMode:       getEnv("GIN_MODE", "debug"),
+			EnableSwagger: getEnvAsBool("SWAGGER_ENABLE", false),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
@@ -107,6 +109,18 @@ func getEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
+func getEnvAsBool(key string, defaultVal bool) bool {
+	valStr := os.Getenv(key)
+	if valStr == "" {
+		return defaultVal
+	}
+	val, err := strconv.ParseBool(valStr)
+	if err != nil {
+		return defaultVal
+	}
+	return val
+}
+
 func getEnvAsInt(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {
 		if intValue, err := strconv.Atoi(value); err == nil {
@@ -125,4 +139,3 @@ func getEnvAsDuration(key string, defaultValue string) time.Duration {
 	duration, _ := time.ParseDuration(defaultValue)
 	return duration
 }
-

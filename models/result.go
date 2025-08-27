@@ -38,32 +38,33 @@ func (a *Answers) Scan(value interface{}) error {
 }
 
 type Result struct {
-	ID           uint           `json:"id" gorm:"primaryKey"`
-	UserID       uint           `json:"user_id" gorm:"not null"`
-	ExamID       uint           `json:"exam_id" gorm:"not null"`
-	UserExamID   uint           `json:"user_exam_id" gorm:"not null"`
-	Score        float64        `json:"score" gorm:"not null"`        // percentage score
-	TotalPoints  int            `json:"total_points" gorm:"not null"` // points earned
-	MaxPoints    int            `json:"max_points" gorm:"not null"`   // maximum possible points
-	Passed       bool           `json:"passed" gorm:"default:false"`
-	Answers      Answers        `json:"answers" gorm:"type:jsonb"`
-	StartTime    time.Time      `json:"start_time" gorm:"not null"`
-	EndTime      time.Time      `json:"end_time" gorm:"not null"`
-	Duration     int            `json:"duration" gorm:"not null"` // in seconds
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`
+	ID          uint           `json:"id" gorm:"primaryKey"`
+	UserID      uint           `json:"user_id" gorm:"not null"`
+	ExamID      uint           `json:"exam_id" gorm:"not null"`
+	UserExamID  uint           `json:"user_exam_id" gorm:"not null"`
+	Score       float64        `json:"score" gorm:"not null"`        // percentage score
+	TotalPoints int            `json:"total_points" gorm:"not null"` // points earned
+	MaxPoints   int            `json:"max_points" gorm:"not null"`   // maximum possible points
+	Passed      bool           `json:"passed" gorm:"default:false"`
+	Answers     Answers        `json:"answers" gorm:"type:jsonb"`
+	StartTime   time.Time      `json:"start_time" gorm:"not null"`
+	EndTime     time.Time      `json:"end_time" gorm:"not null"`
+	Duration    int            `json:"duration" gorm:"not null"` // in seconds
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 
-	// Relationships
-	User     User     `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	Exam     Exam     `json:"exam,omitempty" gorm:"foreignKey:ExamID"`
-	UserExam UserExam `json:"user_exam,omitempty" gorm:"foreignKey:UserExamID"`
+	// Relationships - Note: Removed UserExam to break circular dependency
+	// UserExam can be loaded separately using UserExamID foreign key
+	User User `json:"user,omitempty" gorm:"foreignKey:UserID"`
+	Exam Exam `json:"exam,omitempty" gorm:"foreignKey:ExamID"`
 }
 
 type ResultResponse struct {
 	ID          uint              `json:"id"`
 	UserID      uint              `json:"user_id"`
 	ExamID      uint              `json:"exam_id"`
+	UserExamID  uint              `json:"user_exam_id"`
 	ExamTitle   string            `json:"exam_title"`
 	Score       float64           `json:"score"`
 	TotalPoints int               `json:"total_points"`
@@ -75,16 +76,17 @@ type ResultResponse struct {
 	CreatedAt   time.Time         `json:"created_at"`
 	Answers     []AnswerResponse  `json:"answers,omitempty"`
 	User        *UserResponse     `json:"user,omitempty"`
+	UserExam    *UserExamResponse `json:"user_exam,omitempty"` // Can be populated from service layer
 }
 
 type AnswerResponse struct {
-	QuestionID      uint                `json:"question_id"`
-	Question        *QuestionResponse   `json:"question,omitempty"`
-	SelectedOptions []string            `json:"selected_options"`
-	CorrectOptions  []string            `json:"correct_options,omitempty"`
-	IsCorrect       bool                `json:"is_correct"`
-	Points          int                 `json:"points"`
-	TimeSpent       int                 `json:"time_spent"`
+	QuestionID      uint              `json:"question_id"`
+	Question        *QuestionResponse `json:"question,omitempty"`
+	SelectedOptions []string          `json:"selected_options"`
+	CorrectOptions  []string          `json:"correct_options,omitempty"`
+	IsCorrect       bool              `json:"is_correct"`
+	Points          int               `json:"points"`
+	TimeSpent       int               `json:"time_spent"`
 }
 
 func (r *Result) ToResponse(includeAnswers bool, includeCorrectAnswers bool) ResultResponse {
@@ -92,6 +94,7 @@ func (r *Result) ToResponse(includeAnswers bool, includeCorrectAnswers bool) Res
 		ID:          r.ID,
 		UserID:      r.UserID,
 		ExamID:      r.ExamID,
+		UserExamID:  r.UserExamID,
 		Score:       r.Score,
 		TotalPoints: r.TotalPoints,
 		MaxPoints:   r.MaxPoints,
@@ -135,6 +138,27 @@ func (r *Result) ToResponse(includeAnswers bool, includeCorrectAnswers bool) Res
 	return response
 }
 
+// ToResponseWithUserExam allows including UserExam data when available
+// This should be called from the service layer where UserExam can be loaded separately
+func (r *Result) ToResponseWithUserExam(includeAnswers bool, includeCorrectAnswers bool, userExam *UserExam) ResultResponse {
+	response := r.ToResponse(includeAnswers, includeCorrectAnswers)
+
+	if userExam != nil {
+		userExamResp := &UserExamResponse{
+			ID:           userExam.ID,
+			Status:       userExam.Status,
+			StartedAt:    userExam.StartedAt,
+			CompletedAt:  userExam.CompletedAt,
+			ExpiresAt:    userExam.ExpiresAt,
+			AttemptCount: userExam.AttemptCount,
+			MaxAttempts:  userExam.MaxAttempts,
+		}
+		response.UserExam = userExamResp
+	}
+
+	return response
+}
+
 type ExamStatistics struct {
 	ExamID          uint    `json:"exam_id"`
 	ExamTitle       string  `json:"exam_title"`
@@ -149,25 +173,24 @@ type ExamStatistics struct {
 }
 
 type UserStatistics struct {
-	UserID          uint    `json:"user_id"`
-	Username        string  `json:"username"`
-	TotalExams      int     `json:"total_exams"`
-	PassedExams     int     `json:"passed_exams"`
-	FailedExams     int     `json:"failed_exams"`
-	PassRate        float64 `json:"pass_rate"`
-	AverageScore    float64 `json:"average_score"`
-	HighestScore    float64 `json:"highest_score"`
-	LowestScore     float64 `json:"lowest_score"`
-	TotalTimeSpent  int     `json:"total_time_spent"` // in seconds
+	UserID         uint    `json:"user_id"`
+	Username       string  `json:"username"`
+	TotalExams     int     `json:"total_exams"`
+	PassedExams    int     `json:"passed_exams"`
+	FailedExams    int     `json:"failed_exams"`
+	PassRate       float64 `json:"pass_rate"`
+	AverageScore   float64 `json:"average_score"`
+	HighestScore   float64 `json:"highest_score"`
+	LowestScore    float64 `json:"lowest_score"`
+	TotalTimeSpent int     `json:"total_time_spent"` // in seconds
 }
 
 type QuestionStatistics struct {
-	QuestionID      uint    `json:"question_id"`
-	QuestionTitle   string  `json:"question_title"`
-	TotalAttempts   int     `json:"total_attempts"`
-	CorrectAttempts int     `json:"correct_attempts"`
-	WrongAttempts   int     `json:"wrong_attempts"`
-	SuccessRate     float64 `json:"success_rate"`
-	AverageTimeSpent int    `json:"average_time_spent"` // in seconds
+	QuestionID       uint    `json:"question_id"`
+	QuestionTitle    string  `json:"question_title"`
+	TotalAttempts    int     `json:"total_attempts"`
+	CorrectAttempts  int     `json:"correct_attempts"`
+	WrongAttempts    int     `json:"wrong_attempts"`
+	SuccessRate      float64 `json:"success_rate"`
+	AverageTimeSpent int     `json:"average_time_spent"` // in seconds
 }
-
