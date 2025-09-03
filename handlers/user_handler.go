@@ -112,40 +112,36 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	})
 }
 
-// ChangePassword changes the current user's password
-// @Summary Change user password
-// @Description Change the password of the currently authenticated user
+// ChangePassword allows admin to change any user's password
+// @Summary Change user password (Admin only)
+// @Description Change password for any user (admin only)
 // @Tags users
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body services.ChangePasswordRequest true "Password change data"
+// @Param request body services.ChangePasswordAdminRequest true "Password change data"
 // @Success 200 {object} map[string]interface{} "Password changed successfully"
 // @Failure 400 {object} map[string]interface{} "Bad request"
-// @Failure 401 {object} map[string]interface{} "Unauthorized or incorrect current password"
+// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Failure 403 {object} map[string]interface{} "Forbidden"
+// @Failure 404 {object} map[string]interface{} "User not found"
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/v1/users/change-password [post]
 func (h *UserHandler) ChangePassword(c *gin.Context) {
-	userID, exists := middleware.GetUserID(c)
-	if !exists {
-		middleware.StructuredErrorResponse(c, http.StatusUnauthorized, "UNAUTHORIZED", "Authentication required", nil)
-		return
-	}
-
-	var req services.ChangePasswordRequest
+	var req services.ChangePasswordAdminRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		middleware.StructuredErrorResponse(c, http.StatusBadRequest, "INVALID_REQUEST", "Invalid request data", err.Error())
 		return
 	}
 
-	if err := h.userService.ChangePassword(userID, req); err != nil {
+	if err := h.userService.ChangePasswordAdmin(req); err != nil {
 		h.logger.WithFields(logrus.Fields{
-			"user_id":    userID,
-			"request_id": middleware.GetRequestID(c),
+			"target_user_id": req.UserID,
+			"request_id":     middleware.GetRequestID(c),
 		}).WithError(err).Error("Failed to change user password")
 
-		if err.Error() == "current password is incorrect" {
-			middleware.StructuredErrorResponse(c, http.StatusUnauthorized, "INCORRECT_PASSWORD", "Current password is incorrect", nil)
+		if err.Error() == "user not found" {
+			middleware.StructuredErrorResponse(c, http.StatusNotFound, "USER_NOT_FOUND", "User not found", nil)
 			return
 		}
 
@@ -154,9 +150,9 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 	}
 
 	h.logger.WithFields(logrus.Fields{
-		"user_id":    userID,
-		"request_id": middleware.GetRequestID(c),
-	}).Info("User password changed successfully")
+		"target_user_id": req.UserID,
+		"request_id":     middleware.GetRequestID(c),
+	}).Info("Password changed successfully by admin")
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Password changed successfully",

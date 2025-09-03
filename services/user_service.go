@@ -34,6 +34,11 @@ type ChangePasswordRequest struct {
 	NewPassword     string `json:"new_password" binding:"required,min=6"`
 }
 
+type ChangePasswordAdminRequest struct {
+	UserID      uint   `json:"user_id" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=6"`
+}
+
 type UserListResponse struct {
 	Users      []models.UserResponse `json:"users"`
 	Total      int64                 `json:"total"`
@@ -126,6 +131,37 @@ func (s *UserService) ChangePassword(userID uint, req ChangePasswordRequest) err
 	}
 
 	s.logger.WithField("user_id", user.ID).Info("Password changed successfully")
+	return nil
+}
+
+func (s *UserService) ChangePasswordAdmin(req ChangePasswordAdminRequest) error {
+	var user models.User
+	if err := s.db.Where("id = ?", req.UserID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return fmt.Errorf("user not found")
+		}
+		s.logger.WithError(err).Error("Failed to find user")
+		return fmt.Errorf("failed to change password")
+	}
+
+	// Hash new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		s.logger.WithError(err).Error("Failed to hash password")
+		return fmt.Errorf("failed to change password")
+	}
+
+	// Update password
+	user.Password = string(hashedPassword)
+	if err := s.db.Save(&user).Error; err != nil {
+		s.logger.WithError(err).Error("Failed to update password")
+		return fmt.Errorf("failed to change password")
+	}
+
+	s.logger.WithFields(logrus.Fields{
+		"user_id": user.ID,
+	}).Info("Password changed successfully by admin")
+
 	return nil
 }
 

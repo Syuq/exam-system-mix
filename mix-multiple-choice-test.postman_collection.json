@@ -1,0 +1,1306 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789012",
+		"name": "Mix Multiple Choice Test API",
+		"description": "Complete API collection for Mix Multiple Choice Test backend system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"password123\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.tokens && response.tokens.access_token) {",
+									"        pm.environment.set('authToken', response.tokens.access_token);",
+									"        pm.environment.set('refreshToken', response.tokens.refresh_token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login and get JWT tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.tokens && response.tokens.access_token) {",
+									"        pm.environment.set('adminToken', response.tokens.access_token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as admin and get JWT tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout and invalidate refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Get current user profile"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication related endpoints"
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						},
+						"description": "Get detailed user profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John Updated\",\n  \"last_name\": \"Doe Updated\",\n  \"username\": \"updated_username\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						},
+						"description": "Update current user profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users?page=1&page_size=10&search=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						},
+						"description": "Get paginated list of all users (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Get specific user details (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Updated First Name\",\n  \"last_name\": \"Updated Last Name\",\n  \"username\": \"updated_username\",\n  \"email\": \"updated@example.com\",\n  \"role\": \"user\",\n  \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Update user information (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Delete user (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Change User Password (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 1,\n  \"new_password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/change-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"change-password"
+							]
+						},
+						"description": "Change password for any user (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints"
+		},
+		{
+			"name": "Question Management",
+			"item": [
+				{
+					"name": "Get Questions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions?page=1&page_size=10&tags=programming,go&difficulty=easy&type=multiple_choice&search=&is_active=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								},
+								{
+									"key": "tags",
+									"value": "programming,go"
+								},
+								{
+									"key": "difficulty",
+									"value": "easy"
+								},
+								{
+									"key": "type",
+									"value": "multiple_choice"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "is_active",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Get paginated list of questions with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Question by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"{{questionId}}"
+							]
+						},
+						"description": "Get specific question details"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Question (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.question && response.question.id) {",
+									"        pm.environment.set('questionId', response.question.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"What is Go?\",\n  \"content\": \"Go is a programming language developed by Google. What type of language is it?\",\n  \"type\": \"multiple_choice\",\n  \"difficulty\": \"easy\",\n  \"options\": [\n    {\n      \"id\": \"a\",\n      \"text\": \"Interpreted language\",\n      \"is_correct\": false\n    },\n    {\n      \"id\": \"b\",\n      \"text\": \"Compiled language\",\n      \"is_correct\": true\n    },\n    {\n      \"id\": \"c\",\n      \"text\": \"Scripting language\",\n      \"is_correct\": false\n    },\n    {\n      \"id\": \"d\",\n      \"text\": \"Markup language\",\n      \"is_correct\": false\n    }\n  ],\n  \"tags\": [\"programming\", \"go\", \"basics\"],\n  \"points\": 1,\n  \"time_limit\": 60,\n  \"explanation\": \"Go is a compiled programming language developed by Google.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions"
+							]
+						},
+						"description": "Create a new question (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create True/False Question (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"REST API Protocol\",\n  \"content\": \"Is REST a protocol?\",\n  \"type\": \"true_false\",\n  \"difficulty\": \"medium\",\n  \"options\": [\n    {\n      \"id\": \"true\",\n      \"text\": \"True\",\n      \"is_correct\": false\n    },\n    {\n      \"id\": \"false\",\n      \"text\": \"False\",\n      \"is_correct\": true\n    }\n  ],\n  \"tags\": [\"rest\", \"api\", \"web\"],\n  \"points\": 1,\n  \"time_limit\": 30,\n  \"explanation\": \"REST is an architectural style, not a protocol. HTTP is the protocol commonly used with REST.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions"
+							]
+						},
+						"description": "Create a true/false question (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Question Title\",\n  \"content\": \"Updated question content\",\n  \"type\": \"multiple_choice\",\n  \"difficulty\": \"hard\",\n  \"options\": [\n    {\n      \"id\": \"a\",\n      \"text\": \"Updated Option A\",\n      \"is_correct\": true\n    },\n    {\n      \"id\": \"b\",\n      \"text\": \"Updated Option B\",\n      \"is_correct\": false\n    }\n  ],\n  \"tags\": [\"updated_tag1\", \"updated_tag2\"],\n  \"points\": 3,\n  \"time_limit\": 120,\n  \"explanation\": \"Updated explanation\",\n  \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"{{questionId}}"
+							]
+						},
+						"description": "Update existing question (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"{{questionId}}"
+							]
+						},
+						"description": "Delete question (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Question Tags",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/tags",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"tags"
+							]
+						},
+						"description": "Get all available question tags"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Random Questions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/random?tags=programming,go&count=5&difficulty=easy",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"random"
+							],
+							"query": [
+								{
+									"key": "tags",
+									"value": "programming,go"
+								},
+								{
+									"key": "count",
+									"value": "5"
+								},
+								{
+									"key": "difficulty",
+									"value": "easy"
+								}
+							]
+						},
+						"description": "Get random questions by tags and difficulty"
+					},
+					"response": []
+				}
+			],
+			"description": "Question management endpoints"
+		},
+		{
+			"name": "Exam Management",
+			"item": [
+				{
+					"name": "Get Exams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exams?page=1&page_size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get paginated list of exams"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Exam by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}"
+							]
+						},
+						"description": "Get specific exam details"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Exam (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.exam && response.exam.id) {",
+									"        pm.environment.set('examId', response.exam.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Basic Programming Quiz\",\n  \"description\": \"A basic quiz covering fundamental programming concepts\",\n  \"duration\": 30,\n  \"pass_score\": 70,\n  \"start_time\": \"2024-12-01T10:00:00Z\",\n  \"end_time\": \"2024-12-02T10:00:00Z\",\n  \"questions\": [\n    {\n      \"question_id\": 1,\n      \"points\": 2,\n      \"order\": 1\n    },\n    {\n      \"question_id\": 2,\n      \"points\": 3,\n      \"order\": 2\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/exams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams"
+							]
+						},
+						"description": "Create a new exam (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Exam (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Programming Exam\",\n  \"description\": \"Updated description\",\n  \"duration\": 90,\n  \"pass_score\": 80,\n  \"start_time\": \"2024-12-01T10:00:00Z\",\n  \"end_time\": \"2024-12-02T10:00:00Z\",\n  \"status\": \"active\",\n  \"questions\": [\n    {\n      \"question_id\": 1,\n      \"points\": 4,\n      \"order\": 1\n    },\n    {\n      \"question_id\": 3,\n      \"points\": 3,\n      \"order\": 2\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}"
+							]
+						},
+						"description": "Update existing exam (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Exam (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}"
+							]
+						},
+						"description": "Delete exam (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Exam to Users (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_ids\": [1, 2, 3],\n  \"expires_at\": \"2024-12-03T00:00:00Z\",\n  \"max_attempts\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}/assign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}",
+								"assign"
+							]
+						},
+						"description": "Assign exam to specific users (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.user_exam && response.user_exam.id) {",
+									"        pm.environment.set('userExamId', response.user_exam.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}/start",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}",
+								"start"
+							]
+						},
+						"description": "Start taking an exam"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.result && response.result.id) {",
+									"        pm.environment.set('resultId', response.result.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"answers\": [\n    {\n      \"question_id\": 1,\n      \"selected_options\": [\"b\"],\n      \"time_spent\": 45\n    },\n    {\n      \"question_id\": 2,\n      \"selected_options\": [\"a\"],\n      \"time_spent\": 60\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/exams/{{examId}}/submit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exams",
+								"{{examId}}",
+								"submit"
+							]
+						},
+						"description": "Submit exam answers"
+					},
+					"response": []
+				}
+			],
+			"description": "Exam management endpoints"
+		},
+		{
+			"name": "Result Management",
+			"item": [
+				{
+					"name": "Get Results",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results?page=1&page_size=10&exam_id={{examId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"results"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								},
+								{
+									"key": "exam_id",
+									"value": "{{examId}}"
+								}
+							]
+						},
+						"description": "Get paginated list of exam results"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Result by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/{{resultId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"results",
+								"{{resultId}}"
+							]
+						},
+						"description": "Get specific result details with answers"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Results",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/users/{{userId}}?page=1&page_size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"results",
+								"users",
+								"{{userId}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get results for a specific user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Exam Results",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/exams/{{examId}}?page=1&page_size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"results",
+								"exams",
+								"{{examId}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all results for a specific exam"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Statistics (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/results/statistics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"results",
+								"statistics"
+							]
+						},
+						"description": "Get comprehensive exam statistics (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Result management endpoints"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Seed Database",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/seed",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"seed"
+							]
+						},
+						"description": "Seed database with sample data (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Application Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/logs?lines=100&level=info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "lines",
+									"value": "100"
+								},
+								{
+									"key": "level",
+									"value": "info"
+								}
+							]
+						},
+						"description": "Get application logs (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin-only endpoints"
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check API health status"
+					},
+					"response": []
+				}
+			],
+			"description": "Health check endpoint"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "questionId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "examId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "userExamId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "resultId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
+

@@ -3,7 +3,7 @@ set -euo pipefail
 
 XML_FILE="vidu cau hoi.xml"
 API_URL="http://localhost:8080/api/v1/questions"
-AUTH_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInN1YiI6IjIiLCJleHAiOjE3NTYyNzUwMjUsIm5iZiI6MTc1NjI3NDEyNSwiaWF0IjoxNzU2Mjc0MTI1fQ.Obx9L04_sYSljdUp5LV70mwIL2HpI1REHlegXd2BZmw"
+AUTH_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInN1YiI6IjIiLCJleHAiOjE3NTYzNDY5MDIsIm5iZiI6MTc1NjM0NjAwMiwiaWF0IjoxNzU2MzQ2MDAyfQ.H8oJ6kjwjLt7QNHhvT7lt8gqhBPzdNWw5NjD8ifNF68"
 
 # count questions
 count=$(xmlstarlet sel -t -v "count(/quiz/question)" "$XML_FILE")
